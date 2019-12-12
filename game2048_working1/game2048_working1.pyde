@@ -344,6 +344,4 @@ def keyPressed():
         move_left()      
         done = True
     
-         
-
-    
+   
