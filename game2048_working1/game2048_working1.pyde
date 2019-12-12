@@ -18,6 +18,7 @@ bold_edge1 = 6
 board = [[0]*num_dim1 for i in range(num_dim1)]
 
 size_edge1 = size_tile1/bold_edge1
+isGameover= False
 
 
 # gamefont = createFont(path+'/ClearSans-Bold.ttf', 50)
@@ -41,23 +42,28 @@ def setup():
 
 def draw():
     global done
-    g.display_board()
-    if keyPressed == True and done == True:
-        g.generate_tile()
-        done = False
-        
-
-
-        
-
-class Game:
+    global isGameover
+    if isGameover== False:
+        g.display_board()
+        if keyPressed == True and done == True:
+            g.generate_tile()
+            done = False
+    elif isGameover == True:
+        drawGameOver()
     
+        
+class Game:
     def __init__(self, num_dim, size_tile, bold_edge):
         self.num_dim = num_dim
         self.size_tile = size_tile
         self.bold_edge = bold_edge
         self.size_edge = 100/self.bold_edge
         self.size_board = self.size_edge+(self.size_edge+self.size_tile)*self.num_dim
+        
+    def drawTitle():
+        textSize(35)
+        fill(255,255,255);
+        text("2048", 78, 78);
         
     def display_board(self):
         global n3
@@ -67,6 +73,7 @@ class Game:
         noStroke()
         fill(187,173,161)
         rect(n3, n3, self.size_board, self.size_board, 10)
+        
         for i in range(4):
             for j in range(4):
                 if board[i][j] == 0:
@@ -131,7 +138,6 @@ class Game:
                            
             
     def generate_first_tiles(self):
-        
         global board
         global loc_list
         global n1
@@ -149,23 +155,46 @@ class Game:
         
        
     def generate_tile(self):
-        
+        global isGameover
+
         global board
         global loc_list
         global n1
-        for i in range(num_dim1):
-            for j in range(num_dim1):
-                if board[i][j] == 0:
-                    loc_list.append((i,j))
-        v1 = random.choice([2,4])
-        loc1 = random.choice(loc_list)
-        r1 = loc1[0]
-        c1 = loc1[1]
-        board[r1][c1] = v1
-        del loc_list[:]
-    
-                                     
-g = Game(num_dim1, size_tile1, bold_edge1) 
+        
+        try:
+            for i in range(num_dim1):
+                for j in range(num_dim1):
+                    if board[i][j] == 0:
+                        loc_list.append((i,j))
+            v1 = random.choice([2,4])
+            loc1 = random.choice(loc_list)
+            r1 = loc1[0]
+            c1 = loc1[1]
+            board[r1][c1] = v1
+            del loc_list[:]
+        except IndexError:
+            isGameover= True
+            drawGameOver()
+            
+
+def drawGameOver():
+   
+    fill(187,173,161)
+    rect(n3, n3, 500, 500, 10)
+    fill(250,248,240)
+    textSize(50)
+    text("GAME OVER", width / 2 - textWidth("GAME OVER") / 2, height / 2 - 25)
+    rect(25, height / 2 + 50, width - 50, 50, RADIUS)
+    fill(187,173,161)
+    textSize(30)
+    text("Click inside to retry", width / 2 - textWidth("Click inside to retry") / 2, height / 2 + 75 + 10)
+    if mousePressed==True:
+        #g.display_board
+        g= Game(num_dim1, size_tile1, bold_edge1) 
+
+             
+g= Game(num_dim1, size_tile1, bold_edge1) 
+
 
 
 def move_down():
@@ -314,5 +343,7 @@ def keyPressed():
         merge_left()
         move_left()      
         done = True
+    
+         
 
     
